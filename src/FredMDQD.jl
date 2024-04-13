@@ -3,6 +3,7 @@ module FredMDQD
 using DataFrames
 using CSV
 using Dates 
+using Pkg.Artifacts
 
 include("utils.jl")
 include("transforms.jl")

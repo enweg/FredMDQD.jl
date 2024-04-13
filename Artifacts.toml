@@ -1,0 +1,7 @@
+[FredMDQD]
+git-tree-sha1 = "6361bf66373c058edef9b34f53c7539fa765fb33"
+lazy = true
+
+    [[FredMDQD.download]]
+    url = "https://github.com/enweg/FredMDQD.jl/archive/refs/tags/artifacts-1.0.0-DEV.tar.gz"
+    sha256 = "a0767d27335fbf59acae9313d1f6852845364873a5bd5437e485de1fb7ac6643"
