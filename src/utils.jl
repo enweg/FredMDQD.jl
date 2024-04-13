@@ -3,7 +3,9 @@ function drop_missing_row(df::DataFrame)
     return df[(!).(all_missing), :]
 end
 
-
+"""
+Provide information about `FredMDQD`.
+"""
 function info()
     rootpath = artifact"FredMDQD"
     path = joinpath(rootpath, "info.md")
