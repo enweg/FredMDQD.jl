@@ -7,16 +7,16 @@
 
 ## What is FredMDQD? 
 
-`FredMDQD` aims to make working with Fred MD and Fred QD data easy. It started as a small weekend project consisting of a set of scripts and evolved into a stand-alone package. 
+`FredMDQD` simplifies the process of working with Fred MD or Fred QD data.
 
 ## What are Fred MD and Fred QD?
 
-[Fred MD and Fred QD](https://research.stlouisfed.org/econ/mccracken/fred-databases/) are pre-compiled sets of monthly and quarterly indicators respectively. Both are compiled and maintained by Michael W. McCracken at the Federal Reserve Bank of St. Louis. Fred MD consists of 126 monthly indicators, while Fred QD consists of 245 quarterly indicators. The earliest observations for Fred MD are from January 1959 while the earliest observations for Fred QD are from Q1 1959. 
+[Fred MD and Fred QD](https://research.stlouisfed.org/econ/mccracken/fred-databases/) are curated sets of monthly and quarterly indicators by Michael W. McCracken at the Federal Reserve Bank of St. Louis. Fred MD comprises 126 monthly indicators, while Fred QD consists of 245 quarterly indicators.Observations start in January 1959 for Fred MD and in Q1 1959 for Fred QD. 
 
 
 ## How do I load Fred MD or Fred QD data? 
 
-`FredMDQD` provides various ways to load Fred MD and Fred QD data. The easiest is to just load the current version of either of the data sets. This can be done using the following lines. 
+`FredMDQD` offers straightforward methods to load Fred MD/QD data. The simplest approach loads the most recent version of either dataset. 
 
 ```julia
 using FredMDQD
@@ -26,13 +26,13 @@ fmd = FredMD()  # Loads most recent version of Fred MD
 fqd = FredQD()  # Loads most recent version of Fred QD
 ```
 
-`FredMD` and `FredQD` return a struct containing the following: 
+The returned objects contain: 
 
-- `original::DataFrame`: Fred MD/QD data in without transformations. 
-- `transformed::DataFrame`: McCracken provides recommended transformation to make each variable stationary. The `transformed` DataFrame uses these recommended transformations. 
-- `tcodes::Vector{Int}`: provides the transformation codes used for each variable except the date column. The corresponding mathematical transformations are privided in `@doc fred_transform`. 
+- `original::DataFrame`: Untouched Fred MD/QD data. 
+- `transformed::DataFrame`: Data transformed according to McCracken's recommended stationarity adjustments.
+- `tcodes::Vector{Int}`: Transformation codes for each variable except the date. More information on transformation codes can be found using `@doc FredMDQD.fred_transform`
 
-`FredMDQD` also allows for loading a specific vintage of Fred MD/QD. This can be achieved by providing a date as an argument. To obtain the vintage from March 2022, the following code can be used.
+For loading specific vintage data, provide a date as an argument: 
 
 ```julia
 using Dates
@@ -42,7 +42,7 @@ fmd = FredMD(d)
 fqd = FredQD(d)
 ```
 
-Lastly, if manual download of either Fred MD or QD exits, then `FredMDQD` can be used to load this manual download by providing a path to the file. 
+Manual downloads of Fred MD/QD data can be loaded using file paths: 
 
 ```julia
 path_md = "path to manual download of Fred MD"
@@ -54,22 +54,22 @@ fqd = FredQD(path_qd)
 
 ## What does a variable mean? 
 
-Fred MD/QD use abbreviations for variables that are not always intuitive. To find the meaning behind an abbreviation, or to find an abbreviation corresponding to a specific indicator, the `seach_appendix` function can be used. `search_appendix` searches through the Fred MD/QD appendices to find a specific search term. For example, Fred MD include the indicator DPCERA3M086SBEA. To find the meaning behind this indicator, we can run 
+Fred MD/QD use abbreviations for variables that are not always intuitive. To find the meaning behind an abbreviation, or to find an abbreviation corresponding to a specific indicator, the `seach_appendix` function can be used. `search_appendix` searches through the Fred MD/QD appendices to find a specific search term. For example, Fred MD includes the indicator 'DPCERA3M086SBEA'. To find the meaning behind this indicator, run 
 
 ```julia
 search_appendix(:MD, "DPCERA3M086SBEA")
 ```
 
-This returns a `DataFrame` search results matching our criteria. The indicator DPCERA3M086SBEA corresponds to "Real personal consumption expenditures". 
+This returns a `DataFrame` of search results matching the search criteria. The indicator 'DPCERA3M086SBEA' corresponds to "Real personal consumption expenditures". 
 
-Similarly, if we wanted to find an indicator in Fred QD corresponding to house prices, we can search for 'house' to see if any such indicator exists.
+Similarly, to find an indicator in Fred QD corresponding to house prices, search for 'house' to see if any such indicators exist.
 
 ```julia 
 search_appendix(:QD, "house")
 ```
 
-Thus, Fred QD includes USSTHPI corresponding to "All-Transactions House Price Index for the United States (Index 1980 Q1=100)". 
+The search results indicate that Fred QD includes USSTHPI corresponding to "All-Transactions House Price Index for the United States (Index 1980 Q1=100)". 
 
 ## Where can I find more information? 
 
-More information can be found at the offical website for [Fred MD and Fred QD](https://research.stlouisfed.org/econ/mccracken/fred-databases/). 
+For additional details, visit the official [Fred MD/QD website.](https://research.stlouisfed.org/econ/mccracken/fred-databases/) 
