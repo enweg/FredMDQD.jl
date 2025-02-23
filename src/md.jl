@@ -50,15 +50,25 @@ struct FredMD
 
     function FredMD(d::Date)
         vintage = Dates.format(d, dateformat"yyyy-mm")
-        url = "https://files.stlouisfed.org/files/htdocs/fred-md/monthly/$(vintage).csv"
-        fred_md = CSV.read(download(url), DataFrame)
-        original, tcodes, transformed = load_fred_md(fred_md)
-        new(original, transformed, tcodes)
+        urls = [
+            "https://files.stlouisfed.org/files/htdocs/fred-md/monthly/$(vintage).csv", 
+            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/monthly/$(vintage).csv"
+        ]
+        for url in urls
+            try
+                fred_md = CSV.read(download(url), DataFrame)
+                original, tcodes, transformed = load_fred_md(fred_md)
+                return new(original, transformed, tcodes)
+            catch 
+                continue
+            end
+        end
+        error("Could not download Fred MD data for vintage $(vintage).")
     end 
 
     function FredMD()
         @info "Retrieving the most recent FRED MD data. \n For publishable research it is better to specify the vintage using FredMD(d::Date)."
-        url = "https://files.stlouisfed.org/files/htdocs/fred-md/monthly/current.csv"
+        url = "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/monthly/current.csv"
         fred_md = CSV.read(download(url), DataFrame)
         original, tcodes, transformed = load_fred_md(fred_md)
         new(original, transformed, tcodes)

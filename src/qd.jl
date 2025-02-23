@@ -51,15 +51,25 @@ struct FredQD
 
     function FredQD(d::Date)
         vintage = Dates.format(d, dateformat"yyyy-mm")
-        url = "https://files.stlouisfed.org/files/htdocs/fred-md/quarterly/$(vintage).csv"
-        fred_qd = CSV.read(download(url), DataFrame)
-        original, tcodes, transformed = load_fred_qd(fred_qd)
-        new(original, transformed, tcodes)
+        urls = [
+            "https://files.stlouisfed.org/files/htdocs/fred-md/quarterly/$(vintage).csv", 
+            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/quarterly/$(vintage).csv"
+        ]
+        for url in urls
+            try
+                fred_qd = CSV.read(download(url), DataFrame)
+                original, tcodes, transformed = load_fred_qd(fred_qd)
+                return new(original, transformed, tcodes)
+            catch
+                continue
+            end
+        end
+        error("Could not download Fred QD data for vintage $(vintage).")
     end
 
     function FredQD()
         @info "Retrieving the most recent FRED QD data. \n For publishable research it is better to specify the vintage using FredQD(d::Date)."
-        url = "https://files.stlouisfed.org/files/htdocs/fred-md/quarterly/current.csv"
+        url = "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/quarterly/current.csv"
         fred_qd = CSV.read(download(url), DataFrame)
         original, tcodes, transformed = load_fred_qd(fred_qd)
         new(original, transformed, tcodes)
