@@ -1,7 +1,7 @@
 name = "FredMDQD"
 uuid = "37d59902-f8b1-4525-bb82-82b728cb01b3"
 authors = ["Enrico Wegner"]
-version = "0.0.1"
+version = "0.0.2"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
