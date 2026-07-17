@@ -8,7 +8,7 @@ function load_fred_md(fred_md::DataFrame)
         original[!, 1] = Date.(original[:, 1], dateformat"mm/dd/yyyy")
     end
     transformed = copy(original)
-    for c=2:size(transformed, 2)
+    for c = 2:size(transformed, 2)
         transformed[!, c] = fred_transform(Val(tcodes[c-1]), transformed[:, c])
     end
     return (original = original, tcodes = tcodes, transformed = transformed)
@@ -40,7 +40,7 @@ Load Fred MD data.
 struct FredMD
     original::DataFrame
     transformed::DataFrame
-    tcodes::Vector{Union{Missing, Int64}}
+    tcodes::Vector{Union{Missing,Int64}}
 
     function FredMD(path::String)
         fred_md = CSV.read(path, DataFrame)
@@ -51,20 +51,25 @@ struct FredMD
     function FredMD(d::Date)
         vintage = Dates.format(d, dateformat"yyyy-mm")
         urls = [
-            "https://files.stlouisfed.org/files/htdocs/fred-md/monthly/$(vintage).csv", 
-            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/monthly/$(vintage).csv"
+            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/monthly/$(vintage)-md.csv",
+            "https://files.stlouisfed.org/files/htdocs/fred-md/monthly/$(vintage).csv",
+            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/monthly/$(vintage).csv",
         ]
+        path = joinpath(mktempdir(), "fred-md-$(vintage).csv")
         for url in urls
             try
-                fred_md = CSV.read(download(url), DataFrame)
-                original, tcodes, transformed = load_fred_md(fred_md)
+                download(url, path)
+                fred_md = CSV.read(path, DataFrame)
+                original, tcodes, transformed = FredMDQD.load_fred_md(fred_md)
                 return new(original, transformed, tcodes)
-            catch 
+            catch
                 continue
             end
         end
-        error("Could not download Fred MD data for vintage $(vintage).")
-    end 
+        error(
+            "Could not download Fred MD data for vintage $(vintage).\n[Tip] The best way to resolve this is to download the data manually and use `FredMD(path)` where `path` is the path to the data.",
+        )
+    end
 
     function FredMD()
         @info "Retrieving the most recent FRED MD data. \n For publishable research it is better to specify the vintage using FredMD(d::Date)."
@@ -74,4 +79,3 @@ struct FredMD
         new(original, transformed, tcodes)
     end
 end
-

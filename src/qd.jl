@@ -11,7 +11,7 @@ function load_fred_qd(fred_qd::DataFrame)
     for c = 2:size(transformed, 2)
         transformed[!, c] = fred_transform(Val(tcodes[c-1]), transformed[:, c])
     end
-    return (original=original, tcodes=tcodes, transformed=transformed)
+    return (original = original, tcodes = tcodes, transformed = transformed)
 end
 
 
@@ -52,19 +52,24 @@ struct FredQD
     function FredQD(d::Date)
         vintage = Dates.format(d, dateformat"yyyy-mm")
         urls = [
-            "https://files.stlouisfed.org/files/htdocs/fred-md/quarterly/$(vintage).csv", 
-            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/quarterly/$(vintage).csv"
+            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/quarterly/$(vintage)-qd.csv",
+            "https://files.stlouisfed.org/files/htdocs/fred-md/quarterly/$(vintage).csv",
+            "https://www.stlouisfed.org/-/media/project/frbstl/stlouisfed/research/fred-md/quarterly/$(vintage).csv",
         ]
+        path = joinpath(mktempdir(), "fred-qd-$(vintage).csv")
         for url in urls
             try
-                fred_qd = CSV.read(download(url), DataFrame)
+                download(url, path)
+                fred_qd = CSV.read(path, DataFrame)
                 original, tcodes, transformed = load_fred_qd(fred_qd)
                 return new(original, transformed, tcodes)
             catch
                 continue
             end
         end
-        error("Could not download Fred QD data for vintage $(vintage).")
+        error(
+            "Could not download Fred QD data for vintage $(vintage).\n[Tip] The best way to resolve this is to download the data manually and use `FredQD(path)` where `path` is the path to the data.",
+        )
     end
 
     function FredQD()
